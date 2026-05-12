@@ -122,16 +122,25 @@ var allFunctions = function () {
     request.onerror = function () {
       document.querySelector("main .messages").append("connection error");
     };
+    var debugArea2 = document.querySelector("main .forDebug2");
+    if (debugArea2) debugArea2.innerHTML = ""; // clear old textareas
 
     request.send();
   };
 
   var handleXMLResponse = function (data) {
+    // select and clear the table first
+    var xmltable = document.querySelector("#xmlDataAsTable");
+    xmltable.innerHTML = ""; // clear existing rows
+
     var feature = data.getElementsByTagName("intersection")[0];
     if (typeof feature !== "undefined" && feature.childNodes.length > 0) {
       var headerRow = document.createElement("tr");
       headerRow.innerHTML = "<th>Property name</th><th>value</th>";
-      document.querySelector("#xmlDataAsTable").append(headerRow);
+      xmltable.append(headerRow); // add back the headers
+
+
+      // document.querySelector("#xmlDataAsTable").append(headerRow);
       for (var i = 0; i < feature.childNodes.length; i++) {
         if (feature.childNodes[i].nodeName != "#text") {
           var row = document.createElement("tr");
@@ -143,7 +152,8 @@ var allFunctions = function () {
             "<td>" +
             feature.childNodes[i].childNodes[0].nodeValue +
             "</td>";
-          document.querySelector("#xmlDataAsTable").append(row);
+          // document.querySelector("#xmlDataAsTable").append(row);
+          xmltable.append(row); // added
           row.style.display = "table-row";
         }
       }
@@ -154,12 +164,20 @@ var allFunctions = function () {
     }
   };
 
+
   var getAndDisplayMap = function (wms_request) {
-    var img = document.createElement("img");
-    img.style.display = "none";
-    img.src = wms_request;
-    document.querySelector("main .mapDiv").append(img);
-    img.style.display = "block";
+      // 1. Select the container
+      var mapContainer = document.querySelector("main .mapDiv");
+
+      // 2. Clear the container (Removes previous maps)
+      mapContainer.innerHTML = ""; 
+
+      // 3. Create and add the new map
+      var img = document.createElement("img");
+      img.style.display = "none";
+      img.src = wms_request;
+      mapContainer.append(img);
+      img.style.display = "block";
   };
 
   var constructWMSrequest = function (

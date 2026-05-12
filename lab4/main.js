@@ -26,6 +26,27 @@ var res = [
   3.36, 1.68, 0.84, 0.42,
 ];
 
+
+// Define this BEFORE the var map block
+var parcelsLayer = L.tileLayer.wms("http://localhost:8080/geoserver/wms", {
+  layers: "delft:delft_parcels", 
+  format: "image/png",
+  transparent: true,
+  version: "1.1.1"
+});
+
+// 5. PDOK National WMS Layer (Luchtfoto)
+var pdok_aerial_url = "https://service.pdok.nl/hwh/luchtfotorgb/wms/v1_0?";
+var pdokAerial = L.tileLayer.wms(pdok_aerial_url, {
+    layers: "Actueel_ortho25", 
+    format: "image/png",
+    transparent: true,
+    version: "1.1.1",
+    attribution: "© PDOK / Kadaster"
+});
+
+
+
 // The map object - Javascript object that represents the zoomable map component
 // Projection parameters for RD projection (EPSG:28992):
 var map = L.map("map-canvas", {
@@ -47,9 +68,9 @@ var map = L.map("map-canvas", {
 
 // 2. aerial photo * not working at this moment (see Assignment)
 //    - can be switched on/off by toggle thru L.control.layers (see below in this script)
-var wms_aerial_url = "https://geodata1.nationaalgeoregister.nl/luchtfoto/wms?";
+var wms_aerial_url = "https://service.pdok.nl/hwh/luchtfotorgb/wms/v1_0?";
 var basemap_aerial = new L.tileLayer.wms(wms_aerial_url, {
-  layers: ["luchtfoto_png"],
+  layers: "Actueel_ortho25",
   styles: "",
   format: "image/png",
   transparent: true,
@@ -71,10 +92,7 @@ var sound = new L.tileLayer.wms(wms_sound_url, {
   pointerCursor: true,
 });
 
-var overlays = {
-  "Road noise [WMS]": sound,
-};
-
+// Define the categories for the layer control menu
 var baseLayers = {
   "BRT-Achtergrondkaart [WMTS]": brtRegular,
   "BRT-Achtergrondkaart Grijs [WMTS]": brtGrijs,
@@ -83,4 +101,11 @@ var baseLayers = {
   "Aerial photo [WMS]": basemap_aerial,
 };
 
+var overlays = {
+  "Road noise [WMS]": sound,
+  "My Parcels": parcelsLayer,
+  "PDOK Aerial [WMS]": pdokAerial
+};
+
+// This line adds the menu icon back to the top right
 L.control.layers(baseLayers, overlays).addTo(map);
